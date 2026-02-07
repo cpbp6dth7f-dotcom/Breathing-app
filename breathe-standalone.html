@@ -425,21 +425,21 @@ font-size: 40px;
 <div class="timing-row">
 <div>
 <label for="inhaleTime">Inhale (sec)</label>
-<input type="number" id="inhaleTime" min="1" max="20" value="4" inputmode="numeric" pattern="[0-9]*">
+<input type="number" id="inhaleTime" min="0.1" max="20" step="0.1" value="4" inputmode="decimal" pattern="[0-9]*\.?[0-9]*">
 </div>
 <div>
 <label for="holdTime">Hold (sec)</label>
-<input type="number" id="holdTime" min="0" max="20" value="4" inputmode="numeric" pattern="[0-9]*">
+<input type="number" id="holdTime" min="0" max="20" step="0.1" value="4" inputmode="decimal" pattern="[0-9]*\.?[0-9]*">
 </div>
 </div>
 <div class="timing-row">
 <div>
 <label for="exhaleTime">Exhale (sec)</label>
-<input type="number" id="exhaleTime" min="1" max="20" value="4" inputmode="numeric" pattern="[0-9]*">
+<input type="number" id="exhaleTime" min="0.1" max="20" step="0.1" value="4" inputmode="decimal" pattern="[0-9]*\.?[0-9]*">
 </div>
 <div>
 <label for="holdTime2">Hold (sec)</label>
-<input type="number" id="holdTime2" min="0" max="20" value="4" inputmode="numeric" pattern="[0-9]*">
+<input type="number" id="holdTime2" min="0" max="20" step="0.1" value="4" inputmode="decimal" pattern="[0-9]*\.?[0-9]*">
 </div>
 </div>
 </div>
@@ -547,10 +547,10 @@ const selectedPattern = patternSelect.value;
 
 if (selectedPattern === 'custom') {
 return {
-inhale: parseInt(document.getElementById('inhaleTime').value) || 4,
-hold1: parseInt(document.getElementById('holdTime').value) || 0,
-exhale: parseInt(document.getElementById('exhaleTime').value) || 4,
-hold2: parseInt(document.getElementById('holdTime2').value) || 0
+inhale: parseFloat(document.getElementById('inhaleTime').value) || 4,
+hold1: parseFloat(document.getElementById('holdTime').value) || 0,
+exhale: parseFloat(document.getElementById('exhaleTime').value) || 4,
+hold2: parseFloat(document.getElementById('holdTime2').value) || 0
 };
 }
 
@@ -602,7 +602,8 @@ case 'inhale':
 phaseDuration = currentPattern.inhale;
 phaseProgress = Math.min(elapsed / phaseDuration, 1);
 updateCircleSize(phaseProgress, true);
-phaseTimer.textContent = Math.ceil(phaseDuration - elapsed);
+const inhaleRemaining = phaseDuration - elapsed;
+phaseTimer.textContent = inhaleRemaining > 1 ? Math.ceil(inhaleRemaining) : inhaleRemaining.toFixed(1);
 
 if (elapsed >= phaseDuration) {
 if (currentPattern.hold1 > 0) {
@@ -618,7 +619,8 @@ break;
 
 case 'hold1':
 phaseDuration = currentPattern.hold1;
-phaseTimer.textContent = Math.ceil(phaseDuration - elapsed);
+const hold1Remaining = phaseDuration - elapsed;
+phaseTimer.textContent = hold1Remaining > 1 ? Math.ceil(hold1Remaining) : hold1Remaining.toFixed(1);
 
 if (elapsed >= phaseDuration) {
 currentPhase = 'exhale';
@@ -631,7 +633,8 @@ case 'exhale':
 phaseDuration = currentPattern.exhale;
 phaseProgress = Math.min(elapsed / phaseDuration, 1);
 updateCircleSize(phaseProgress, false);
-phaseTimer.textContent = Math.ceil(phaseDuration - elapsed);
+const exhaleRemaining = phaseDuration - elapsed;
+phaseTimer.textContent = exhaleRemaining > 1 ? Math.ceil(exhaleRemaining) : exhaleRemaining.toFixed(1);
 
 if (elapsed >= phaseDuration) {
 if (currentPattern.hold2 > 0) {
@@ -647,7 +650,8 @@ break;
 
 case 'hold2':
 phaseDuration = currentPattern.hold2;
-phaseTimer.textContent = Math.ceil(phaseDuration - elapsed);
+const hold2Remaining = phaseDuration - elapsed;
+phaseTimer.textContent = hold2Remaining > 1 ? Math.ceil(hold2Remaining) : hold2Remaining.toFixed(1);
 
 if (elapsed >= phaseDuration) {
 currentPhase = 'inhale';
